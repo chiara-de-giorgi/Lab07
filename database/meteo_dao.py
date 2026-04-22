@@ -25,3 +25,25 @@ class MeteoDao():
         return result
 
 
+
+    @staticmethod
+    def getAllLocalità():
+        cnx = DBConnect.get_connection()
+        result = []
+        if cnx is None:
+            print("Connessione fallita")
+        else:
+            cursor = cnx.cursor(dictionary=True)
+            query = """select distinct s.Localita
+                from situazione s"""
+            cursor.execute(query)
+
+            for row in cursor:
+                result.append(Situazione(row["Localita"],
+                                         row["Data"],
+                                         row["Umidita"]))
+            cursor.close()
+            cnx.close()
+        return result
+
+

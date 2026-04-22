@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import flet as ft
 
 from UI.view import View
@@ -14,7 +16,41 @@ class Controller:
         self._mese = 0
 
     def handle_umidita_media(self, e):
-        pass
+        self._view.lst_result.controls.clear()
+
+        mese_selezionato=self._view.dd_mese.value
+
+        situazioni=self._model.getAllSituazioni()
+
+        if not mese_selezionato:
+            self._view.create_alert("Selezionare un mese")
+            self._view.update_page()
+            return
+
+        media=defaultdict(list)  #Un tipo di dizionario che non solleva mai errore KeyError (perchè la chiave viene sempre creata)
+                                 #Dizionario chiave:località --> valore: lista dei valori delle umidità
+
+
+        for s in situazioni:
+            if int(mese_selezionato) == s.data.month:
+                media[s.localita].append(s.umidita)
+                # if s.localita not in media:
+                #     somma[s.localita]=0
+                # somma[s.localita]+=s.umidita
+
+
+
+        self._view.lst_result.controls.append(ft.Text("L' umidità media nel mese selezionato è: "))
+
+        for localita, valori in media.items():
+            media=sum(valori)/len(valori)
+            self._view.lst_result.controls.append(ft.Text(f"{localita}: {media:.4f}"))
+
+        self._view.update_page()
+        return
+
+
+
 
 
 
